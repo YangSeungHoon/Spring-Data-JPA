@@ -11,6 +11,7 @@ import sh.practiceJPA.datajpa.entity.Team;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -136,6 +137,22 @@ class MemberRepositoryTest {
         for (Member member : result) {
             System.out.println("member = " + member);
         }
+    }
+
+    @Test
+    public void returnTypeTest() {
+        Member m1 = new Member("AAA",10);
+        Member m2 = new Member("BBB",20);
+
+        memberRepository.save(m1);
+        memberRepository.save(m2);
+
+        //컬렉션에서 만약에 없는 것을 찾으려고하면 null을 반환하는 것이 아니라, 사이즈가 0인 컬렉션을 반화한다.(empty 컬렉션 반환)
+        List<Member> result = memberRepository.findListByUsername("AAA");
+
+        //이렇게 단건 조회에서 없는 값을 찾으려고하면 결과가 null을 반환한다.
+        Member findMember = memberRepository.findMemberByUsername("AAA");
+        Optional<Member> optionalMember = memberRepository.findOptionalByUsername("AAA");
     }
 
 }
