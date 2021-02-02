@@ -3,6 +3,10 @@ package sh.practiceJPA.datajpa.repository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import sh.practiceJPA.datajpa.dto.MemberDto;
@@ -154,5 +158,58 @@ class MemberRepositoryTest {
         Member findMember = memberRepository.findMemberByUsername("AAA");
         Optional<Member> optionalMember = memberRepository.findOptionalByUsername("AAA");
     }
+
+    @Test
+    public void paging() {
+        memberRepository.save(new Member("memebr1",10));
+        memberRepository.save(new Member("memebr2",10));
+        memberRepository.save(new Member("memebr3",10));
+        memberRepository.save(new Member("memebr4",10));
+        memberRepository.save(new Member("memebr5",10));
+
+        int age=  10;
+
+        //0페이지에서 3개 가져오는데 username기준으로 내림차순 하겠다.
+        PageRequest pageRequest = PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "username"));
+
+        //반환타입이 Page이면 total Page까지 알아서 가져온다.
+        Page<Member> page = memberRepository.findByAge(age,pageRequest);
+
+        List<Member> content = page.getContent();
+
+        //그대로 반환하면 안된다. 이렇게 map으로해서 MemberDto로 바꿔서 반환해 줘야한다.
+        Page<MemberDto> toMap = page.map(member -> new MemberDto(member.getId(), member.getUsername(), null));
+
+        assertThat(content.size()).isEqualTo(3);
+        assertThat(page.getTotalElements()).isEqualTo(5); //전체 수
+        assertThat(page.getNumber()).isEqualTo(0); //페이지 번호
+        assertThat(page.getTotalPages()).isEqualTo(2);// 전체 페이지개수
+        assertThat(page.isFirst()).isTrue(); //첫 번째 페이지인지 확인
+        assertThat(page.hasNext()).isTrue(); //다음 페이지가 존재하는지 확인인
+    }
+
+
+//    //slice는 totalCount가 안날라간다.
+//    @Test
+//    public void slicePaging() {
+//        memberRepository.save(new Member("memebr1",10));
+//        memberRepository.save(new Member("memebr2",10));
+//        memberRepository.save(new Member("memebr3",10));
+//        memberRepository.save(new Member("memebr4",10));
+//        memberRepository.save(new Member("memebr5",10));
+//
+//        int age=  10;
+//
+//        PageRequest pageRequest = PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "username"));
+//
+//        Slice<Member> page = memberRepository.findByAge(age,pageRequest);
+//
+//        List<Member> content = page.getContent();
+//
+//        assertThat(content.size()).isEqualTo(3);
+//        assertThat(page.getNumber()).isEqualTo(0); //페이지 번호
+//        assertThat(page.isFirst()).isTrue(); //첫 번째 페이지인지 확인
+//        assertThat(page.hasNext()).isTrue(); //다음 페이지가 존재하는지 확인인
+//    }
 
 }

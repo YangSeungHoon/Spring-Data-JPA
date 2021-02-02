@@ -87,7 +87,7 @@ class MemberJpaRepositoryTest {
         int offset = 0;
         int limit = 3;
 
-        List<Member> members = memberJpaRepository.findByPAge(age, offset, limit);
+        List<Member> members = memberJpaRepository.findByPage(age, offset, limit);
         long totalCount = memberJpaRepository.totalCount(age);
 
         assertThat(members.size()).isEqualTo(3);
