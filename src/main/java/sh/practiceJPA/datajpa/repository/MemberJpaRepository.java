@@ -1,6 +1,7 @@
 package sh.practiceJPA.datajpa.repository;
 
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.stereotype.Repository;
 import sh.practiceJPA.datajpa.entity.Member;
 
@@ -71,4 +72,5 @@ public class MemberJpaRepository {
                 .setParameter("age",age)
                .executeUpdate();
     }
+
 }

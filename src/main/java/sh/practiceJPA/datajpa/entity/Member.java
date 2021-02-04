@@ -9,6 +9,11 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED) //아래 인자 없는 생성자 대신 이거..
 @ToString(of = {"id","username","age"})
+@NamedQuery(
+        name ="Member.findByUsername",
+        query = "select m from Member m where m.username = :username"
+)
+@NamedEntityGraph(name = "Member", attributeNodes = @NamedAttributeNode("team"))
 public class Member {
 
     @Id
