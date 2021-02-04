@@ -3,14 +3,13 @@ package sh.practiceJPA.datajpa.repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.jpa.repository.EntityGraph;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import sh.practiceJPA.datajpa.dto.MemberDto;
 import sh.practiceJPA.datajpa.entity.Member;
 
+import javax.persistence.LockModeType;
+import javax.persistence.QueryHint;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -71,4 +70,12 @@ public interface MemberRepository  extends JpaRepository<Member,Long> {
     //회원 조회할때 보통 team데이터도 같이 쓴다면 그냥 아래처럼 해놓고 쓰면 회원조회하면서 team데이터도 fetch join으로 같이 가져온다.
     @EntityGraph(attributePaths = {"team"})
     List<Member> findEntityGraphByUsername(@Param("username") String username);
+
+    //수정할 것이 아니라면, 이렇게 오로지 read만 하겠다라고 설정을 해서 최적화가 가능하다.
+    //이러한 설정이 없다면 수정할 수 있다는것으로 간주하여 자동으로 snapshot을 찍는 행위를 하는데, 이것이 최적화에 걸림돌이 될 수 있다.
+    @QueryHints(value = @QueryHint( name ="org.hibernate.readOnly", value = "true"))
+    Member findReadOnlyByUsername(String username);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    List<Member> findLockByUsername(String username);
 }
