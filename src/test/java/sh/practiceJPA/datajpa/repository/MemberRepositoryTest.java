@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
-@Rollback(false)
+//@Rollback(false)
 class MemberRepositoryTest {
 
     @Autowired
@@ -211,5 +211,33 @@ class MemberRepositoryTest {
 //        assertThat(page.isFirst()).isTrue(); //첫 번째 페이지인지 확인
 //        assertThat(page.hasNext()).isTrue(); //다음 페이지가 존재하는지 확인인
 //    }
+
+    @Test
+    public void bulkUpdate() {
+
+        memberRepository.save(new Member("memebr1",10));
+        memberRepository.save(new Member("memebr2",11));
+        memberRepository.save(new Member("memebr3",12));
+        memberRepository.save(new Member("memebr4",20));
+        memberRepository.save(new Member("memebr5",21));
+        memberRepository.save(new Member("memebr5",40));
+
+        int resultCount = memberRepository.bulkAgePlus(20);
+        //em.flush() 물론 위에 벌크연산이 jpql로 이루어져 있어서 flush는 자연스럽게 실행된다.
+        //em.clear()// 어쨋거나 영속성 컨텍스트는 초기화를 시켜줘야해서 clear()가 필요하다. 근데 이것을 여기다 안하고, Repository쪽에서
+        //설정이 가능하다.
+
+        //이렇게만 실행하면 age가 바뀌지 않는다.
+        //왜냐하면 이것은 벌크 연산때문인데, JPA에서는 영속성 컨텍스트가 존재하는데 이 벌크 연산을 실행하면 영속성 컨텍스트를 무시하고
+        //그대로 DB에 쿼리를 날려버린다. 그러니까 아직 영속성 컨텍스트는 초기화가 되지 못하고, member5의 나이가 40인 것이다.
+        //물론 이 때, DB에 member5의 값은 41로 업데이트 되어있다.
+        //그래서 위의 상황을 막기위해 벌크연산 이후에는 무조건 em.flush()를 하고, em.clear()를 해주는것이 안전하다.
+        //물론 벌크 연산 이후에 추가적인 조작이 없다면 상관없긴함.
+        List<Member> result = memberRepository.findListByUsername("member5");
+        Member member5 = result.get(0);
+        System.out.println("member5 = " + member5);
+
+        assertThat(resultCount).isEqualTo(3);
+    }
 
 }
