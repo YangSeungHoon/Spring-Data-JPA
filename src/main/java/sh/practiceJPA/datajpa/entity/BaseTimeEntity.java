@@ -15,15 +15,13 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class) //이벤트를 기반으로 동작한다는 것을 의미.
 @MappedSuperclass
 @Getter
-public class BaseEntity extends BaseTimeEntity {
+public class BaseTimeEntity {
 
-    //등록자 관련해서 값이 들어가는 것은 Application 실행부분에서 처리했음.(DataJpaApplication)
-    @CreatedBy
+
+    @CreatedDate
     @Column(updatable = false)
-    private String createdBy;
+    private LocalDateTime createdDate;
 
-    @LastModifiedBy
-    private String lastModifiedBy;
-
-
+    @LastModifiedDate
+    private LocalDateTime lastModifiedDate;
 }
