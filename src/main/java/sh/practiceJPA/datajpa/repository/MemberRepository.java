@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 //JpaRepository<Entity,Entity에 맵핑된 pk>
-public interface MemberRepository  extends JpaRepository<Member,Long> {
+public interface MemberRepository  extends JpaRepository<Member,Long>, MemberRepositoryCustom {
 
     List<Member> findByUsernameAndAgeGreaterThan(String username,int age);
 

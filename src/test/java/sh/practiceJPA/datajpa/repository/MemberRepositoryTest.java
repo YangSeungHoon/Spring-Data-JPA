@@ -32,6 +32,9 @@ class MemberRepositoryTest {
     TeamRepository teamRepository;
 
     @Autowired
+    MemberQueryRepository memberQueryRepository;
+
+    @Autowired
     EntityManager em;
 
     @Test
@@ -302,7 +305,11 @@ class MemberRepositoryTest {
 
         List<Member> result = memberRepository.findLockByUsername("member1");
 
+    }
 
+    @Test
+    public void callCustom() throws Exception {
+        List<Member> result = memberRepository.findMemberCustom();
     }
 
 
