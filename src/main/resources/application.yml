@@ -20,6 +20,9 @@ spring:
       pageable:
         default-page-size: 10
         max-page-size: 2000
+        #이렇게 설정하면 페이징처리시 1부터 시작하는데, 페이지 객체안에 들어있는 값은
+        #원래의 0부터 시작하던 것을 그대로 가져가서 값이 다르게 된다.
+        one-indexed-parameters: true
 
 logging:
   level:
