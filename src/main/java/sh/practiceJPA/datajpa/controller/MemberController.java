@@ -46,7 +46,7 @@ public class MemberController {
 //        memberRepository.save(new Member("userA"));
 //    }
 
-    @PostConstruct//page 실험용 데이터터
+    //@PostConstruct//page 실험용 데이터터
    public void init() {
         for(int i = 0; i < 100; i++) {
             memberRepository.save(new Member("user"+ i,i));
