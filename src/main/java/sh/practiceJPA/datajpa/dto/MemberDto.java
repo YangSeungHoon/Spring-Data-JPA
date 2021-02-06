@@ -1,6 +1,7 @@
 package sh.practiceJPA.datajpa.dto;
 
 import lombok.Data;
+import sh.practiceJPA.datajpa.entity.Member;
 
 @Data
 public class MemberDto {
@@ -13,5 +14,10 @@ public class MemberDto {
         this.id = id;
         this.username = username;
         this.teamName = teamName;
+    }
+
+    public MemberDto(Member member) {
+        this.id = member.getId();
+        this.username = member.getUsername();
     }
 }
