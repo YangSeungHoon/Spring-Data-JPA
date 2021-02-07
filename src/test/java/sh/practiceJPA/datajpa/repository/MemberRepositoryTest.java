@@ -3,10 +3,7 @@ package sh.practiceJPA.datajpa.repository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import sh.practiceJPA.datajpa.dto.MemberDto;
@@ -311,6 +308,48 @@ class MemberRepositoryTest {
     public void callCustom() throws Exception {
         List<Member> result = memberRepository.findMemberCustom();
     }
+
+    //QueryByExample
+    //동적 쿼리를 편리하게 처리하고 도메인 객체를 그대로 사용한다.
+    //그래서 데이터 저장소를 RDB에서 NoSQL로 변경해도 코드 변경이 없게 추상화 되어 있음.
+    // 스프링 데이터 JPA JpaRepository 인터페이스에 이미 포함되되어있음.
+
+    // 그러나 명확하게 단점이 존재함.
+    //일단, 조인은 가능하지만 내부조인(INNER JOIN)만 가능하고 외부조인(LEFT JOIN)은 안됨.
+    //그리고 중첩 제약조건이 불가능하고 매칭 조건이 너무 단순함.
+
+    //결과적으로 그냥 QueryDSL을 사용하는 것이 해결책임.
+    @Test
+    public void queryByExample() throws Exception {
+
+        Team teamA = new Team("teamA");
+        em.persist(teamA);
+
+        Member m1 = new Member("m1",0,teamA);
+        Member m2 = new Member("m2",0,teamA);
+        em.persist(m1);
+        em.persist(m2);
+
+        em.flush();
+        em.clear();
+
+        //when
+        Member member= new Member("m1");
+        Team team = new Team("teamA"); //내부조인으로 teamA 가능
+        member.setTeam(team);
+
+        //ExampleMatcher 생성, age프로퍼티는 무시
+        ExampleMatcher matcher = ExampleMatcher.matching()
+                .withIgnorePaths("age");
+
+        Example<Member> example = Example.of(member,matcher);
+
+        List<Member> result = memberRepository.findAll(example);
+
+        assertThat(result.get(0).getUsername()).isEqualTo("m1");
+
+    }
+
 
 
 
