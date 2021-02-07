@@ -350,7 +350,30 @@ class MemberRepositoryTest {
 
     }
 
+    //원하는 데이터만 딱 가져올 때 사용.
+    @Test
+    public void projectionsTest() throws Exception {
+        // given
+        Team teamA = new Team("teamA");
+        em.persist(teamA);
 
+        Member m1 = new Member("m1",0,teamA);
+        Member m2 = new Member("m2",0,teamA);
+        em.persist(m1);
+        em.persist(m2);
 
+        em.flush();
+        em.clear();
+
+        // when
+        List<UsernameOnly> result = memberRepository.findProjectionsByUsername("m1");
+
+        for (UsernameOnly usernameOnly : result) {
+            System.out.println("usernameOnly = " + usernameOnly);
+        }
+
+        // then
+
+    }
 
 }
