@@ -109,4 +109,5 @@ class MemberJpaRepositoryTest {
         assertThat(resultCount).isEqualTo(3);
     }
 
+
 }
